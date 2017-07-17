@@ -1,0 +1,106 @@
+import edu.princeton.cs.algs4.StdRandom;
+import edu.princeton.cs.algs4.StdStats;
+import edu.princeton.cs.algs4.WeightedQuickUnionUF;
+
+public class Percolation {
+  
+    private int count;
+    private WeightedQuickUnionUF WQUUF;
+    private int lineMatrix, matrixRange, startBox, endBox;
+    private boolean[][] matrix;
+  
+  // create n-by-n grid, with all sites blocked
+    public Percolation(int n) {
+        if (n < 1) throw new IllegalArgumentException("Invalid value");
+        matrixRange = n;
+        matrix = new boolean[matrixRange][matrixRange];
+        lineMatrix = n * n + 2; // 0 - start, n*n  
+        startBox = lineMatrix-2;
+        endBox = lineMatrix-1;
+        count = 0;
+        WQUUF = new WeightedQuickUnionUF(lineMatrix);
+    }                
+  
+  // open site (row, col) if it is not open already
+    public void open(int row, int col) {
+        validate(row, col);
+        count++;
+        if (!isOpen(row, col)) {
+            matrix[row][col] = true;
+            if (row == 0) {
+                WQUUF.union(matrix2line(row, col), startBox);
+            } 
+            else if (isOpen(row-1, col)) WQUUF.union(matrix2line(row, col), matrix2line(row-1, col));
+      
+            if (row == matrixRange-1) {
+                WQUUF.union(matrix2line(row, col), endBox);
+            } 
+            else if (isOpen(row+1, col)) { 
+                WQUUF.union(matrix2line(row, col), matrix2line(row+1, col));
+            }
+            if ((col > 0) && isOpen(row, col-1)) WQUUF.union(matrix2line(row, col), matrix2line(row, col-1));
+            if ((col < matrixRange-1) && isOpen(row, col+1)) WQUUF.union(matrix2line(row, col), matrix2line(row, col+1));
+        }
+    }    
+  // is site (row, col) open?
+    public boolean isOpen(int row, int col) {
+        return matrix[row][col];
+    }  
+  // is site (row, col) full?
+    public boolean isFull(int row, int col) {
+        return WQUUF.connected(startBox, matrix2line(row, col));
+    }  
+   // number of open sites
+    public     int numberOfOpenSites() {
+        return count;
+    }      
+   // does the system percolate?
+    public boolean percolates() {
+        return WQUUF.connected(startBox, endBox);
+    }           
+
+    public int matrix2line(int row, int col) {
+        return row*matrixRange + col;
+    }
+  
+    private void validate(int row, int col) {
+        if (row < 0 || row > matrixRange || col < 0 || col > matrixRange)  throw new IllegalArgumentException("Invalid value");
+    }
+    public static void main(String[] args) {
+    int row, col;
+    Percolation d = new Percolation(4);    
+        while (!d.percolates()){
+        row = StdRandom.uniform(4);
+        col = StdRandom.uniform(4);
+        System.out.println("  " + row + "  " + col);
+        d.open(row,col);
+        }
+    
+ /*   System.out.println( d.isFull(0,16));
+    System.out.println(d.isOpen(0,1));
+    System.out.println(d.isOpen(0,2));
+    System.out.println(d.isOpen(2,0));
+    System.out.println(d.isOpen(2,1));
+    System.out.println("============================================");
+    System.out.println(d.percolates());
+    
+    d.open(0,1);
+    d.open(1,1);
+    System.out.println(d.isOpen(1,1));
+ //   d.open(2,1);
+    System.out.println(d.percolates());
+  //  d.open(3,1);
+    System.out.println(d.percolates());
+     System.out.println("============================================");
+    for (int i=0; i < d.matrixRange; i++)
+      for (int j=0; j < d.matrixRange; j++)
+         System.out.println("[" + i + "][" + j + "]" + d.matrix[i][j]);
+    
+    System.out.println(d.numberOfOpenSites());
+
+    
+    for (int i=0; i <d.matrixRange; i++)
+      for (int j=0; j<d.matrixRange; j++)
+         System.out.println("[" + i + "][" + j + "]" + d.isFull(i,j));*/
+    }  
+}
