@@ -8,7 +8,7 @@ public class Percolation {
     private boolean[][] matrix;
   
   // create n-by-n grid, with all sites blocked
-    public Percolation(int n) {
+    private Percolation(int n) {
         if (n < 1) throw new IllegalArgumentException("Invalid value");
         matrixRange = n;
         matrix = new boolean[matrixRange+1][matrixRange+1];
