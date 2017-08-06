@@ -1,90 +1,62 @@
 import java.util.Comparator;
-import edu.princeton.cs.algs4.StdRandom;
-import edu.princeton.cs.algs4.StdDraw;
+import java.util.ArrayList;
+import java.util.Arrays;
+/*
+ * Write a program BruteCollinearPoints.java 
+ * that examines 4 points at a time and checks whether they all
+ * lie on the same line segment, returning all such line segments.
+ * 
+ * To check whether the 4 points p, q, r, and s are collinear, 
+ * check whether the three slopes between p and q, between p and r, 
+ * and between p and s are all equal.
+ */
+
 public class BruteCollinearPoints {
 
-    private int segmentCount;
-    private Point[] points;
+    private final ArrayList<LineSegment> segments = new ArrayList<>();
     // finds all line segments containing 4 points
-    public BruteCollinearPoints(Point[] points) {
-        validatePoints(points);
-        this.points = points;
-        
-        
-        
-        for (int i = 0; i < points.length; i++)
-            for (int j = i; j < points.length; j++)
-                for (int k = j; k < points.length; k++)
-                    if (isLineSegment(points[i].slopeOrder(), points[j], points[k]) && (points[j] != points[k]) && (points[j] != points[i]) ) 
-                        for (int l = 0; l < points.length; l++)
-                            if (isLineSegment(points[l].slopeOrder(), points[j], points[k]) && (points[j] != points[k]) && (points[j] != points[l])  && (points[j] != points[i]) && (points[l] != points[i]) )
-                                System.out.println(points[i].toString() + points[j].toString() + points[k].toString() + points[l].toString() + isLineSegment(points[i].slopeOrder(), points[j], points[k]));
-      
+    public BruteCollinearPoints(Point[] inPoints) {
+        Point[] points = inPoints.clone();
+        Arrays.sort(points);
+        validateOrderedPoints(points);
+        for (int i = 0; i < points.length; i++) {
+            Arrays.sort(points);
+//            Arrays.sort(points, points[i].slopeOrder());
+            for (int j = i+1; j < points.length; j++)
+                for (int k = j+1; k < points.length; k++)
+                    if (isLineSegment(points[i].slopeOrder(), points[j], points[k])) 
+                        for (int m = k+1; m < points.length; m++)
+                            if (isLineSegment(points[m].slopeOrder(), points[j], points[k])) {
+//                                    System.out.println(points[i].toString() + points[j].toString() + points[k].toString() + points[m].toString()
+//                                      + isLineSegment(points[i].slopeOrder(), points[j], points[k]));
+                                    segments.add(new LineSegment(points[i], points[m]));
+                            }
+        }
     }
     
     
-    private boolean isLineSegment(Comparator<Point> c,Point a, Point b) {
-        return c.compare(a,b) == 0;  
+    private boolean isLineSegment(Comparator<Point> c, Point a, Point b) {
+        return c.compare(a, b) == 0;  
     }  
     // the number of line segments
     public int numberOfSegments() {
-        return segmentCount;
+        return segments.size();
     }
+    
     // the line segments
     public LineSegment[] segments() {
-        Point a = new Point(1,1);
-        Point b = new Point(2,2);
-        LineSegment ls = new LineSegment(a,b);
-        return null;
+        return segments.toArray(new LineSegment[segments.size()]);
     }
-    //Corner cases. Throw a java.lang.IllegalArgumentException if the argument to the constructor is null, 
-    //if any point in the array is null, or if the argument to the constructor contains a repeated point.
-    private void validatePoints(Point[] points) {
+    // Corner cases. Throw a java.lang.IllegalArgumentException if the argument to the constructor is null, 
+    // if any point in the array is null, or if the argument to the constructor contains a repeated point.
+    private void validateOrderedPoints(Point[] points) {
         if (points == null) throw new java.lang.IllegalArgumentException("Points array is null");
-
-        for (int j = 0;j < points.length;j++)
-            for (int k = j+1;k<points.length;k++)
-                if (k != j && points[k] == points[j])
-                    throw new java.lang.IllegalArgumentException("Array contains a repeated points");
+        
+        for (int i = 0; i < points.length - 1; i++) 
+            if (points[i].compareTo(points[i + 1]) == 0) throw new java.lang.IllegalArgumentException("Array contains a repeated points");
         
         for (int i = 0; i < points.length; i++)
-            if (points[i] == null) 
-                throw new java.lang.IllegalArgumentException("Array contains null points");
-        
-    }
-      
-    public static void main(String[] args) {
-        int length = 100;
-        int x,y;
-        Point[] points = new Point[length];
-        for (int i = 0; i < length; i++) {
-             x = StdRandom.uniform(0, 100);
-             y = StdRandom.uniform(0, 100);
-             points[i] = new Point(x,y);    
-        }
-        
-            StdDraw.setXscale(0, 100);
-            StdDraw.setYscale(0, 100);
-            
-                for (Point p : points) {
-  //      p.draw();
-    }
-  //  StdDraw.show();
-      
-    
-    BruteCollinearPoints bcp = new BruteCollinearPoints(points);
-//StdDraw.line(35,71,50,83);
+            if (points[i] == null) throw new java.lang.IllegalArgumentException("Array contains null points");
+    }    
 
-//StdDraw.line(35,71,30,67);
-        
- /*     
-(28, 0)(60, 37)(19, 32)false
-(28, 0)(60, 37)(47, 96)false
-(28, 0)(60, 37)(48, 55)false
-(28, 0)(60, 37)(51, 88)false
-(28, 0)(60, 37)(66, 16)false
-(28, 0)(60, 37)(73, 87)true*/
- // draw the points
-
-    }
 }

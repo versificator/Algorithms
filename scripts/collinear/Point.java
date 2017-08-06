@@ -60,17 +60,17 @@ public class Point implements Comparable<Point> {
      */
     public double slopeTo(Point that) {
       
-      //Treat the slope of a horizontal line segment as positive zero; 
-      //treat the slope of a vertical line segment as positive infinity; 
-      //treat the slope of a degenerate line segment (between a point and itself) as negative infinity.
-    if (that.y == this.y && that.x != this.x) 
-        return +0.0;
-    else if (that.x == this.x && that.y != this.y)
-        return Double.POSITIVE_INFINITY;
-    else if  (that.x == this.x && that.y == this.y)
-        return Double.NEGATIVE_INFINITY;
-    else
-        return (double)(that.y - this.y) / (double)(that.x - this.x);
+      /* Treat the slope of a horizontal line segment as positive zero; 
+      treat the slope of a vertical line segment as positive infinity; 
+      treat the slope of a degenerate line segment (between a point and itself) as negative infinity. */
+        if (that.y == this.y && that.x != this.x) 
+            return +0.0;
+        else if (that.x == this.x && that.y != this.y)
+            return Double.POSITIVE_INFINITY;
+        else if  (that.x == this.x && that.y == this.y)
+            return Double.NEGATIVE_INFINITY;
+        else
+            return (double) (that.y - this.y) / (double) (that.x - this.x);
     }
 
     /**
@@ -86,9 +86,13 @@ public class Point implements Comparable<Point> {
      *         argument point
      */
     public int compareTo(Point that) {
-        if (this.x == that.x && this.y == that.y) 
-            return 0;
-        else if (this.y < that.y ||(this.y == that.y && this.x < that.x)) return -1;
+        if (that == null) {
+            throw new NullPointerException();
+        }
+        if (this.x == that.x && this.y == that.y) return 0;
+        
+        else if (this.y < that.y || (this.y == that.y && this.x < that.x)) return -1;
+        
         else return 1;
     }
 
@@ -130,13 +134,5 @@ public class Point implements Comparable<Point> {
     /**
      * Unit tests the Point data type.
      */
-    public static void main(String[] args) {
-        Point p = new Point(1,1);
-        Point p1 = new Point(4,5);
-        Point p2 = new Point(-100,7);
-  
-        p.drawTo(p1);
-    //    p.drawTo(p2);
 
-    }
 }
