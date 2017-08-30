@@ -5,7 +5,7 @@ import java.util.Stack;
 import java.util.Queue;
 
 
-import edu.princeton.cs.algs4.StdOut;
+//import edu.princeton.cs.algs4.StdOut;
 
 
 public class Solver {
@@ -70,12 +70,12 @@ public class Solver {
                 }
             
             currentNode = pq.delMin();
-            StdOut.println("Current Node " + currentNode.board.toString());
-            StdOut.print(" manhattan = " + currentNode.board.manhattan() + "  currentNode.board.isGoal() = " + currentNode.board.isGoal());
+            //StdOut.println("Current Node " + currentNode.board.toString());
+            //StdOut.print(" manhattan = " + currentNode.board.manhattan() + "  currentNode.board.isGoal() = " + currentNode.board.isGoal());
 //            StdOut.print(" priority = " + currentNode.priority);
 //            StdOut.println(" moves = " + currentNode.moves);
             currentTwinNode = pqTwin.delMin();
-            StdOut.println("TwinNode " + currentTwinNode.board.toString() + "  currentTwinNode.board.isGoal() = "  + currentTwinNode.board.isGoal());
+            //StdOut.println("TwinNode " + currentTwinNode.board.toString() + "  currentTwinNode.board.isGoal() = "  + currentTwinNode.board.isGoal());
  //           StdOut.println("!currentNode.board.isGoal() && !currentTwinNode.board.isGoal()= "   + (!currentNode.board.isGoal() && !currentTwinNode.board.isGoal()  ));
         }
         

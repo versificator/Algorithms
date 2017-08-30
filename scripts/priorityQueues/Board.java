@@ -87,10 +87,9 @@ public class Board {
             public Iterator<Board> iterator() {
                 return new Iterator<Board>() {
                     private int position;
-                    private Board[] items = getNeibors().toArray(new Board[getNeibors().size()]);
+                    private Board[] items = getNeibors().toArray(new Board[getNeibors().size()]);  
                     
-                    
-                    private Board getNeibor(int[][] tile, int x1, int y1, int x2, int y2) {
+                    private Board getNeibor(int x1, int y1, int x2, int y2) {
                     int[][] b = deepCopy(blocks);
                     swap(b,x1,y1,x2,y2);
                     return new Board(b);
@@ -103,67 +102,19 @@ public class Board {
                                 if (blocks[row][col] == 0) {
 //                                    StdOut.println("row="+row + " col=" + col);
                                     if (row > 0) {
-                                        int [][] boardNorth = new int[blocks[0].length][];
-                                        for (int i = 0; i < blocks[0].length; i++) {
-                                            int[] aMatrix = blocks[i];
-                                            int aLength = aMatrix.length;
-                                            boardNorth[i] = new int[aLength];
-                                            System.arraycopy(aMatrix, 0, boardNorth[i], 0, aLength);
-                                        }   
-                                    
-
-                                        temp = boardNorth[row][col];
-                                        boardNorth[row][col] =  boardNorth[row - 1][col];
-                                        boardNorth[row - 1][col] =  temp;
-                                        Board b1 = new Board(boardNorth);
-                                        board.add(b1);
+                                        board.add(getNeibor(row,col,row - 1,col));
                                     }
                             
                                     if (row < dimension()-1) {
-                                        int [][] boardSouth = new int[blocks[0].length][];
-                                        for (int i = 0; i < blocks[0].length; i++) {
-                                            int[] aMatrix = blocks[i];
-                                            int   aLength = aMatrix.length;
-                                            boardSouth[i] = new int[aLength];
-                                            System.arraycopy(aMatrix, 0, boardSouth[i], 0, aLength);
-                                        }     
-                                    
-                                        temp = boardSouth[row][col];
-                                        boardSouth[row][col] =  boardSouth[row + 1][col];
-                                        boardSouth[row + 1][col] =  temp;
-                                        Board b2 = new Board(boardSouth);
-                                        board.add(b2);
+                                        board.add(getNeibor(row,col,row + 1,col));
                                     }
                              
-                             
                                     if (col > 0) {
-                                        int [][] boardWest = new int[blocks[0].length][];
-                                        for (int i = 0; i < blocks[0].length; i++) {
-                                            int[] aMatrix = blocks[i];
-                                            int   aLength = aMatrix.length;
-                                            boardWest[i] = new int[aLength];
-                                            System.arraycopy(aMatrix, 0, boardWest[i], 0, aLength);
-                                        }     
-                                        temp = boardWest[row][col];
-                                        boardWest[row][col] =  boardWest[row][col - 1];
-                                        boardWest[row][col - 1] =  temp;
-                                        Board b3 = new Board(boardWest);
-                                        board.add(b3);
+                                        board.add(getNeibor(row,col,row,col - 1));
                                     }
                               
                                     if (col < dimension()-1) {
-                                        int [][] boardEast = new int[blocks[0].length][];
-                                        for (int i = 0; i < blocks[0].length; i++) {
-                                            int[] aMatrix = blocks[i];
-                                            int   aLength = aMatrix.length;
-                                            boardEast[i] = new int[aLength];
-                                            System.arraycopy(aMatrix, 0, boardEast[i], 0, aLength);
-                                        }     
-                                        temp = boardEast[row][col];
-                                        boardEast[row][col] =  boardEast[row][col + 1];
-                                        boardEast[row][col + 1] =  temp;
-                                        Board b4 = new Board(boardEast);
-                                        board.add(b4);
+                                        board.add(getNeibor(row,col,row,col + 1));
                                     }
                                 }   
                         return board;
