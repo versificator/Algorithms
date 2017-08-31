@@ -17,7 +17,7 @@ public class Solver {
   
         private final Node previous;
         private final Board board;
-        private int moves = 0, priority;
+        private final int moves, priority;
   
         public Node(Node previous, Board board, int moves) {
             this.previous = previous;
@@ -35,6 +35,7 @@ public class Solver {
     
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board inInitial) {
+        if (inInitial == null) throw new java.lang.IllegalArgumentException();
         MinPQ<Node> pq = new MinPQ<Node>();
         MinPQ<Node> pqTwin = new MinPQ<Node>(); 
         Board initial = inInitial;
@@ -54,17 +55,17 @@ public class Solver {
         pqTwin.insert(currentTwinNode);
         
         
-        while (!currentNode.board.isGoal() && !currentTwinNode.board.isGoal() ) {
+        while (true) {
             //StdOut.println("currentTwinNode.board.isGoal()  = " + currentTwinNode.board.isGoal() +   "   currentTwinNode.board.manhattan() = " + currentTwinNode.board.manhattan());
           //   StdOut.println(currentTwinNode.board.toString());
             
             for (Board nextBoard: currentNode.board.neighbors())
-              if (!nextBoard.equals(currentNode.board)) {
+              if (currentNode.previous == null || !nextBoard.equals(currentNode.board)) {
                     pq.insert(new Node(currentNode, nextBoard, currentNode.moves + 1));
                     //StdOut.println("neighbors at Solver: " + nextBoard.toString() + "   manhattan =  " + nextBoard.manhattan());
             }
             for (Board nextTwinBoard: currentTwinNode.board.neighbors())
-                if (!nextTwinBoard.equals(currentTwinNode.board)) {
+                if (currentTwinNode.previous == null || !nextTwinBoard.equals(currentTwinNode.board)) {
                     pqTwin.insert(new Node(currentTwinNode, nextTwinBoard, currentTwinNode.moves + 1));
 
                 }
@@ -77,17 +78,21 @@ public class Solver {
             currentTwinNode = pqTwin.delMin();
             //StdOut.println("TwinNode " + currentTwinNode.board.toString() + "  currentTwinNode.board.isGoal() = "  + currentTwinNode.board.isGoal());
  //           StdOut.println("!currentNode.board.isGoal() && !currentTwinNode.board.isGoal()= "   + (!currentNode.board.isGoal() && !currentTwinNode.board.isGoal()  ));
-        }
+        
         
        
          if (currentNode.board.isGoal()) { 
                 isSolvable = true;
+                break;
 //                lastNode = currentNode;
             }
           else if (currentTwinNode.board.isGoal()) {
                 isSolvable = false;
+                break;
 //                lastNode = null;
             }
+          
+        }
         
     }
     

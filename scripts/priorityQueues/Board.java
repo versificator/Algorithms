@@ -55,29 +55,39 @@ public class Board {
     // a board that is obtained by exchanging any pair of blocks
     public Board twin() {
         int[][] twinBlocks = deepCopy(blocks);
-        for (int row = 0; row < dimension() - 1; row++)
-            if (twinBlocks[row][0] != 0 && twinBlocks[row+1][0] != 0) {
-                swap(twinBlocks, row, 0, row + 1, 0);
-                return new Board(twinBlocks);
-            }
-                      
-        for (int col = 0; col < dimension() - 1; col++) 
-            if (twinBlocks[0][col] != 0 && twinBlocks[0][col + 1] != 0) {
-                swap(twinBlocks,0,col,0, col +1);
-                return new Board(twinBlocks);
-            }
+        for (int row = 0; row < dimension(); row++)
+            for (int col = 0; col < dimension() ; col++) 
+                if ( (row + 1< dimension()) && twinBlocks[row][col] != 0 && twinBlocks[row+1][col] != 0) {
+                    return new Board(swap(twinBlocks, row, col, row + 1, col));
+                }
+        else if ((col + 1 < dimension()) && twinBlocks[row][col] != 0 && twinBlocks[row][col + 1] != 0) { 
+                    return new Board(swap(twinBlocks, row, col, row, col + 1));
+                }      
         throw new java.lang.IllegalArgumentException();        
     }
     
     // does this board equal y?
-    public boolean equals(Object y) {
-        Object that =  y;
+    public boolean equals(Object y)
+    {
+        if (y == this) return true;
         if (y == null) return false;
-        if (this == y) return true;
-        if (this.getClass() != y.getClass()) return false;
-        if (((Board) that).range != ((Board) this).range) return false;
-        
-        return Arrays.deepEquals(((Board) this).blocks, ((Board) that).blocks);
+        if (y.getClass() != this.getClass()) return false;
+
+        Board that = (Board) y;
+        if (this.dimension() != that.dimension()) return false;
+
+        for (int i = 0; i < range; ++i)
+        {
+            for (int j = 0; j < range; ++j)
+            {
+                if (this.blocks[i][j] != that.blocks[i][j])
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
     
     // all neighboring boards
@@ -90,12 +100,9 @@ public class Board {
                     private Board[] items = getNeibors().toArray(new Board[getNeibors().size()]);  
                     
                     private Board getNeibor(int x1, int y1, int x2, int y2) {
-                    int[][] b = deepCopy(blocks);
-                    swap(b,x1,y1,x2,y2);
-                    return new Board(b);
+                    return new Board(swap(blocks,x1,y1,x2,y2));
                     }
                     private ArrayList<Board> getNeibors() {
-                        int temp = 0;
                         ArrayList<Board> board = new ArrayList<>();
                         for (int row = 0; row < dimension(); row++)
                             for (int col = 0; col < dimension(); col++)
@@ -148,9 +155,9 @@ public class Board {
     }
     
     private void validate(int[][] inBlocks) {
-        if (inBlocks == null) throw new java.lang.IllegalArgumentException();
+        if (inBlocks == null) throw new java.lang.IllegalArgumentException("inBlocks is empty");
         for (int i = 0; i < inBlocks.length-1; i++)
-            if (inBlocks[i].length != inBlocks[i+1].length) throw new java.lang.IllegalArgumentException();   
+            if (inBlocks[i].length != inBlocks[i+1].length) throw new java.lang.IllegalArgumentException("Length of rows and columns is different");   
     }
     
     private int matrix2line(int row, int col) {
@@ -166,10 +173,12 @@ public class Board {
         return duplicate;
     }
     
-    private void swap(int[][] blocks, int x, int y, int i, int j) {
-        int swap = blocks[x][y];
-        blocks[x][y] = blocks[i][j];
-        blocks[i][j] = swap;
+    private int[][] swap(int[][] blocks, int x, int y, int i, int j) {
+        int[][] copy = deepCopy(blocks);
+        int swap = copy[x][y];
+        copy[x][y] = copy[i][j];
+        copy[i][j] = swap;
+        return copy;
     }
     // unit tests (not graded)
 
