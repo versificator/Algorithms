@@ -1,20 +1,16 @@
-//  import edu.princeton.cs.algs4.StdOut;
-
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.ArrayList;
-import java.util.Arrays;
 public class Board {
   // construct a board from an n-by-n array of blocks
   // (where blocks[i][j] = block in row i, column j)
   
     private final int[][] blocks;
     private final int range;
-    
+    private final int manhattan;
     public Board(int[][] inBlocks) {
         validate(inBlocks);
         range = inBlocks.length;
         blocks = deepCopy(inBlocks);
+        manhattan = getManhattan();
     }
     // board dimension n                                   
     public int dimension() {
@@ -30,38 +26,60 @@ public class Board {
         return sum;
     }
     
-    // sum of Manhattan distances between blocks and goal
-    public int manhattan() {
+//    private int linearRowConflicts(){
+//    int linear = 0;
+//    int goalRow = 0;
+//        for (int row = 0; row < dimension(); row++) {
+//         int max = -1;
+//            for (int col = 0; col < dimension(); col++) {
+//                if (blocks[row][col] != 0) {
+//                    goalRow = (blocks[row][col] - 1) / range;
+//               //     StdOut.println("[" + row +"," + col +"] = " + blocks[row][col] + "  goalRow = " + goalRow);
+//                        if (goalRow == row){
+//                            if (blocks[row][col] > max)
+//                                max = blocks[row][col];
+//                            else {
+//                                linear =+ 2;
+//                            }
+//                        } 
+//                }
+//            }
+//        }
+//    return linear;
+//    }
+    
+    private int getManhattan() {
         int sum = 0, intPart, fracPart;
-        for (int row = 0; row < dimension(); row++)
+        for (int row = 0; row < dimension(); row++) {
             for (int col = 0; col < dimension(); col++)
-                if (blocks[row][col] != 0) {
-             //       StdOut.print("manhattan (" + row + ", " + col + "),    blocks[row][col]= " + blocks[row][col]);
+                if (blocks[row][col] != 0 && (blocks[row][col] != 1+ col +(row*this.range))) {
                     intPart = (blocks[row][col] -1) / dimension();
                     fracPart =  blocks[row][col] - 1 - intPart*dimension();
-            //        StdOut.println("  intPart="+intPart + " fracPart=" + fracPart);
                     sum += Math.abs(row - intPart) + Math.abs(col - fracPart);
                 }
-        
-  //      StdOut.println("manhattan sum = " + sum);
+        }
         return sum;  
+    }
+    
+    // sum of Manhattan distances between blocks and goal
+    public int manhattan() {
+        return manhattan;
     }
     
     // is this board the goal board?
     public boolean isGoal() {
-        return (manhattan() == 0); 
+        return manhattan == 0; 
     }
     
     // a board that is obtained by exchanging any pair of blocks
     public Board twin() {
-        int[][] twinBlocks = deepCopy(blocks);
         for (int row = 0; row < dimension(); row++)
-            for (int col = 0; col < dimension() ; col++) 
-                if ( (row + 1< dimension()) && twinBlocks[row][col] != 0 && twinBlocks[row+1][col] != 0) {
-                    return new Board(swap(twinBlocks, row, col, row + 1, col));
+            for (int col = 0; col < dimension(); col++) 
+                if ((row + 1 < dimension()) && blocks[row][col] != 0 && blocks[row + 1][col] != 0) {
+                    return new Board(swap(deepCopy(blocks), row, col, row + 1, col));
                 }
-        else if ((col + 1 < dimension()) && twinBlocks[row][col] != 0 && twinBlocks[row][col + 1] != 0) { 
-                    return new Board(swap(twinBlocks, row, col, row, col + 1));
+        else if ((col + 1 < dimension()) && blocks[row][col] != 0 && blocks[row][col + 1] != 0) { 
+                    return new Board(swap(deepCopy(blocks), row, col, row, col + 1));
                 }      
         throw new java.lang.IllegalArgumentException();        
     }
@@ -74,11 +92,12 @@ public class Board {
         if (y.getClass() != this.getClass()) return false;
 
         Board that = (Board) y;
+        
         if (this.dimension() != that.dimension()) return false;
 
-        for (int i = 0; i < range; ++i)
+        for (int i = 0; i < dimension(); ++i)
         {
-            for (int j = 0; j < range; ++j)
+            for (int j = 0; j < dimension(); ++j)
             {
                 if (this.blocks[i][j] != that.blocks[i][j])
                 {
@@ -86,60 +105,21 @@ public class Board {
                 }
             }
         }
-
         return true;
     }
     
     // all neighboring boards
     public Iterable<Board> neighbors() {
-        return new Iterable<Board>() {
-            @Override
-            public Iterator<Board> iterator() {
-                return new Iterator<Board>() {
-                    private int position;
-                    private Board[] items = getNeibors().toArray(new Board[getNeibors().size()]);  
-                    
-                    private Board getNeibor(int x1, int y1, int x2, int y2) {
-                    return new Board(swap(blocks,x1,y1,x2,y2));
-                    }
-                    private ArrayList<Board> getNeibors() {
-                        ArrayList<Board> board = new ArrayList<>();
-                        for (int row = 0; row < dimension(); row++)
-                            for (int col = 0; col < dimension(); col++)
-                                if (blocks[row][col] == 0) {
-//                                    StdOut.println("row="+row + " col=" + col);
-                                    if (row > 0) {
-                                        board.add(getNeibor(row,col,row - 1,col));
-                                    }
-                            
-                                    if (row < dimension()-1) {
-                                        board.add(getNeibor(row,col,row + 1,col));
-                                    }
-                             
-                                    if (col > 0) {
-                                        board.add(getNeibor(row,col,row,col - 1));
-                                    }
-                              
-                                    if (col < dimension()-1) {
-                                        board.add(getNeibor(row,col,row,col + 1));
-                                    }
-                                }   
-                        return board;
-                    }
-                
-                    @Override
-                    public boolean hasNext() {
-                        return position != items.length;
-                    }
-
-                    @Override
-                    public Board next() {
-                        if (!hasNext()) throw new NoSuchElementException();
-                        return items[position++];
-                    }
-                };
-            }
-        };
+        ArrayList<Board> board = new ArrayList<>();
+        for (int row = 0; row < dimension(); row++)
+            for (int col = 0; col < dimension(); col++)
+                if (blocks[row][col] == 0) {
+                    if (row > 0) board.add(new Board(swap(blocks, row, col, row - 1, col)));
+                    if (row < dimension()-1) board.add(new Board(swap(blocks, row, col, row + 1, col)));
+                    if (col > 0) board.add(new Board(swap(blocks, row, col, row, col - 1)));
+                    if (col < dimension()-1) board.add(new Board(swap(blocks, row, col, row, col + 1)));
+                }   
+        return board;          
     }
     
     public String toString() {
@@ -164,7 +144,6 @@ public class Board {
         return (row)*dimension() + col + 1;
     }
     
-    
     private int[][] deepCopy(int[][] inBlocks) {
         int[][] duplicate = new int[dimension()][dimension()];
         for (int row = 0; row < dimension(); row++)
@@ -173,8 +152,8 @@ public class Board {
         return duplicate;
     }
     
-    private int[][] swap(int[][] blocks, int x, int y, int i, int j) {
-        int[][] copy = deepCopy(blocks);
+    private int[][] swap(int[][] inBlocks, int x, int y, int i, int j) {
+        int[][] copy = deepCopy(inBlocks);
         int swap = copy[x][y];
         copy[x][y] = copy[i][j];
         copy[i][j] = swap;
