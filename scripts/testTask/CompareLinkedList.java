@@ -40,13 +40,13 @@ class CompareLinkedList{
         node2 = node2.next;
       }
       
-        if (node1 != null &&( node2 == null|| node1.data > node2.data )) return 1;    
-            
-        if (node2 != null &&(node2 == null || node2.data > node1.data || node1 == null)) return -1;  
-            
-            }
+      if (node1 != null &&( node2 == null|| node1.data > node2.data )) return 1;    
+      
+      if (node2 != null &&(node2 == null || node2.data > node1.data || node1 == null)) return -1;  
+      
+    }
     return 0;  
-    } 
+  } 
   public static void main(String args[]){
     CompareLinkedList cll = new CompareLinkedList();
     cll.a = new Node('a');
@@ -60,4 +60,4 @@ class CompareLinkedList{
     
     System.out.println(cll.compare(cll.a,cll.b));
   }
-  }
+}
